@@ -1,0 +1,48 @@
+---
+title: "Demo Project test"
+---
+
+This is a Quarto website.
+
+To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
+
+```{r echo=FALSE}
+library(readr)
+library(ggplot2)
+```
+
+```{r echo=FALSE}
+covid_data <- read_csv("covid_cases_russia_march.csv",show_col_types = FALSE)
+
+
+```
+
+```{r echo=FALSE}
+covid <- read_csv("covid_data.csv",show_col_types = FALSE)
+```
+
+```{r echo=FALSE}
+library(knitr)
+```
+
+```{r echo=FALSE}
+include_graphics("Screenshot.png")
+```
+
+```{r echo=FALSE}
+ggplot(covid_data, aes(x = `Date (March)`, y = `Total Cases`)) +
+  geom_line(color = "blue") +
+  geom_point() +
+  scale_y_continuous(limits = c(0, 2000), breaks = seq(0, 5000, by = 250))+
+  labs(title = "COVID-19 Cases in Russia (March)", x = "Date (March)", y = "Total Cases") +
+  theme_minimal()
+```
+
+```{r}
+ggplot(covid_data, aes(x = `Date (March)`, y = `Total Cases`)) +
+  geom_bar(stat = "identity", fill = "skyblue") +
+  geom_text(aes(label = `Total Cases`), vjust = -0.3, size = 2.75) + 
+  scale_y_continuous(limits = c(0, 2000), breaks = seq(0, 5000, by = 250))+
+  labs(title = "COVID-19 Cases in Russia (March)", x = "Date (March)", y = "Total Cases") +
+  theme_minimal()
+```

@@ -1,0 +1,182 @@
+---
+title: "Code"
+---
+
+```{r eval=FALSE,}
+library(readr)
+library(plotly)
+library(knitr)
+library(tidyverse)
+library(ggplot2)
+```
+
+```         
+
+# Redesign of Visualizations
+
+This chart from the Canadian National Broadcast Company showing their sources of funding in two financial years.
+```
+
+```{r eval=FALSE}
+include_graphics("Final_revenue.png")
+```
+
+Issues with the Graph
+
+-   The Y-axis has an unnatural break between \$700M and \$1,700M, making the scale misleading.
+-   The \$490M revenue appears larger than the \$1.2B government funding due to this distortion.
+-   At first glance, it seems that television revenue is equal to government funding because the bars representing them are almost the same length.
+-   The distortion in the Y-axis makes the visual comparison inaccurate, leading to misinterpretation.
+-   The revenue and advertising revenue should not be separate bars; they should subdivide the total income bar.
+-   The second and third bars only represent subdivisions of the first bar but are presented as separate, contributing to the confusion.
+
+```{r}
+
+```
+
+## year vs amount by source of funding
+
+```{r eval=FALSE}
+revenue_data <- read_csv("Untitled.csv",show_col_types = FALSE)
+```
+
+```{r eval=FALSE}
+funding_data <- read.csv("Untitled.csv")
+
+colnames(funding_data) <- c("Source.of.Funding", "2017-18", "2018-19")
+```
+
+```{r eval=FALSE}
+
+funding_long <- pivot_longer(funding_data, cols = c("2018-19","2017-18"),
+                              names_to = "Year", values_to = "Amount")
+
+#  Calculate total revenue for each year
+total_revenue <- funding_long %>%
+  group_by(Year) %>%
+  summarise(Source.of.Funding = "Total", Amount = sum(Amount), .groups = 'drop')
+
+# Combine individual funding sources with total revenue
+combined_data <- bind_rows(funding_long, total_revenue)
+
+# Convert Source.of.Funding to a factor with explicit levels
+combined_data$Source.of.Funding <- factor(combined_data$Source.of.Funding,
+                                           levels = c("Government revenue", "Television revenue", "Digital revenue", 
+                                                      "Subscriber fees", "Financing and other income", "Total"))
+
+combined_data$RoundedAmount <- round(combined_data$Amount)
+```
+
+```{r eval=FALSE}
+plot_ly(data = combined_data, 
+        x = ~Year, 
+        y = ~Amount, 
+        color = ~Source.of.Funding, 
+        colors = c("Government revenue" = "#1f77b4",
+                   "Television revenue" = "#ff7f0e",
+                   "Digital revenue" = "#2ca02c",
+                   "Subscriber fees" = "#d62728",
+                   "Financing and other income" = "#9467bd",
+                   "Total" = "#7f7f7f"),
+        type = 'bar', 
+        text = ~RoundedAmount, 
+        textposition = 'outside') %>%
+  layout(title = "Total Revenue of Canadian National Broadcast Company by Source of Funding",
+         xaxis = list(title = "Year"),
+         yaxis = list(title = "Amount ($ Millions)"),
+         barmode = 'group')  # Grouped bar chart
+```
+
+## Changes I Made to the Bar Chart
+
+-   Removed the unnatural break between \$700M and \$1,700M for accurate data representation.
+-   Corrected bar heights to accurately compare the revenue of \$490M to the government funding of \$1.2B.
+-   Merged separate income components (such as advertising revenue) into the total income bar for a clearer breakdown.
+-   Improved the overall readability by using consistent color schemes and labels for different income categories.
+
+## Percantage of amount by source of funding
+
+```{r eval=FALSE}
+
+
+# Create the pie chart for 2018-19
+pie_2018 <- plot_ly(data = funding_long %>% filter(Year == "2018-19"), 
+                    labels = ~`Source.of.Funding`, 
+                    values = ~Amount, 
+                    type = 'pie', 
+                    textinfo = 'label+percent', 
+                    insidetextorientation = 'auto', 
+                    marker = list(colors = c(
+                      "#1f77b4",  # Government revenue
+                      "#ff7f0e",  # Television revenue
+                      "#2ca02c",   # Digital revenue
+                      "#d62728",   # Subscriber fees
+                      "#9467bd"    # Financing and other income
+                    )),
+                    showlegend = TRUE,
+                    title = "Funding Sources for 2018-19") %>%
+  layout(
+    legend = list(orientation = 'v',  # Vertical legend
+                  x = 1.1,            # Position on the right side
+                  y = 0.5,            # Centered vertically
+                  xanchor = 'left'),   # Left anchor for x
+    margin = list(r = 100)  # Increase right margin for legend spacing
+  )
+```
+
+```{r eval=FALSE}
+
+
+# Create the pie chart for 2018-19
+pie_2017 <- plot_ly(data = funding_long %>% filter(Year == "2017-18"), 
+                    labels = ~`Source.of.Funding`, 
+                    values = ~Amount, 
+                    type = 'pie', 
+                    textinfo = 'label+percent', 
+                    insidetextorientation = 'auto', 
+                    marker = list(colors = c(
+                      "#1f77b4",  # Government revenue
+                      "#ff7f0e",  # Television revenue
+                      "#2ca02c",   # Digital revenue
+                      "#d62728",   # Subscriber fees
+                      "#9467bd"    # Financing and other income
+                    )),title = "Funding Sources for 2017-18",
+                    showlegend = TRUE) %>%
+   layout(
+    legend = list(orientation = 'v',  # Vertical legend
+                  x = 1.1,            # Position on the right side
+                  y = 0.5,            # Centered vertically
+                  xanchor = 'left'),   # Left anchor for x
+    margin = list(r = 100)  # Increase right margin for legend spacing
+  ) # Increase bottom margin for better spacing
+  
+```
+
+```{r eval=FALSE}
+htmltools::browsable(
+  htmltools::tagList(
+    htmltools::tags$div(style = "display: block; width: 100%; margin-bottom: 50px;", pie_2018),
+    htmltools::tags$div(style = "display: block; width: 100%;", pie_2017)
+  )
+)
+
+```
+
+## Changes Made to the Pie Charts:
+
+-   Introduced pie charts to show the proportional contribution of each funding source for 2017-18 and 2018-19.
+
+-   Used percentages to emphasize the dominance of government revenue, making it easier to understand the composition of the total funding.
+
+-   Ensured each section is clearly labeled and color-coded to match the funding categories, improving quick identification and comparison.
+
+## Summary
+
+-   Y-Axis Distortion: By removing the unnatural break between \$700M and \$1,700M, you corrected the misleading scale, allowing for a more accurate representation of the data.
+-   Bar Height Accuracy: The adjustment of bar heights ensured that the \$490M revenue no longer appears larger than the \$1.2B government funding, providing a correct visual comparison.
+-   Component Merging: Merging the separate income components (such as advertising revenue) into the total income bar resolved the confusion caused by showing them as separate bars. This now clearly reflects the subdivisions within the total income.
+-   Improved Visualization: The consistent color schemes and labels, along with the use of pie charts for proportional representation, enhance the clarity and comprehension of how each funding source contributes to the overall total.
+
+## Refrences
+
+<https://www.codeconquest.com/blog/12-bad-data-visualization-examples-explained/>

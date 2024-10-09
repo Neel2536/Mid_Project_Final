@@ -1,0 +1,267 @@
+---
+title: "Demo Project test"
+---
+
+This is a Quarto website.
+
+To learn more about Quarto websites visit https://quarto.org/docs/websites.
+
+```{r echo=FALSE}
+library(readr)
+library(plotly)
+
+library(ggplot2)
+```
+
+```{r echo=FALSE}
+revenue_data <- read_csv("Untitled.csv",show_col_types = FALSE)
+```
+
+```{r echo=FALSE}
+library(knitr)
+library(tidyverse)
+```
+
+```{r echo=FALSE}
+funding_data <- read.csv("Untitled.csv")
+
+colnames(funding_data) <- c("Source.of.Funding", "2017-18", "2018-19")
+
+print(colnames(funding_data))
+
+```
+
+```{r echo=FALSE}
+# Load necessary libraries
+library(ggplot2)
+
+# Assuming the data is loaded as covid_data
+# Convert necessary columns to factors for better plotting
+
+funding_long <- pivot_longer(funding_data, cols = c("2018-19","2017-18"),
+                              names_to = "Year", values_to = "Amount")
+
+# Step 4: Calculate total revenue for each year
+total_revenue <- funding_long %>%
+  group_by(Year) %>%
+  summarise(Source.of.Funding = "Total", Amount = sum(Amount), .groups = 'drop')
+
+# Combine individual funding sources with total revenue
+combined_data <- bind_rows(funding_long, total_revenue)
+
+# Step 5: Convert Source.of.Funding to a factor with explicit levels
+combined_data$Source.of.Funding <- factor(combined_data$Source.of.Funding,
+                                           levels = c("Government revenue", "Television revenue", "Digital revenue", 
+                                                      "Subscriber fees", "Financing and other income", "Total"))
+
+# Step 6: Create the bar chart with individual bars for each source and total
+ggplot(combined_data, aes(x = Year, y = Amount, fill = Source.of.Funding)) +
+  geom_bar(stat = "identity", position = position_dodge()) +
+  labs(title = "Total Revenue of Canadian National Broadcast Company by Source of Funding",
+       x = "Year",
+       y = "Amount ($ Millions)") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_fill_manual(values = c(
+    "Government revenue" = "#1f77b4",   # Blue
+    "Television revenue" = "#ff7f0e",   # Orange
+    "Digital revenue" = "#2ca02c",      # Green
+    "Subscriber fees" = "#d62728",      # Red
+    "Financing and other income" = "#9467bd", # Purple
+    "Total" = "#7f7f7f"  # Grey for total revenue
+  )) +
+  geom_text(aes(label = Amount), position = position_dodge(width = 0.9), vjust = -0.5, color = "black")
+```
+
+```{r}
+
+library(ggplot2)
+library(gridExtra) 
+
+```
+
+```{r echo=FALSE}
+# Load necessary libraries
+library(ggplot2)
+
+# Assuming the data is loaded as covid_data
+# Convert necessary columns to factors for better plotting
+
+funding_long <- pivot_longer(funding_data, cols = c("2018-19","2017-18"),
+                              names_to = "Year", values_to = "Amount")
+
+# Step 4: Calculate total revenue for each year
+total_revenue <- funding_long %>%
+  group_by(Year) %>%
+  summarise(Source.of.Funding = "Total", Amount = sum(Amount), .groups = 'drop')
+
+# Combine individual funding sources with total revenue
+combined_data <- bind_rows(funding_long, total_revenue)
+
+# Step 5: Convert Source.of.Funding to a factor with explicit levels
+combined_data$Source.of.Funding <- factor(combined_data$Source.of.Funding,
+                                           levels = c("Government revenue", "Television revenue", "Digital revenue", 
+                                                      "Subscriber fees", "Financing and other income", "Total"))
+
+# Step 6: Create the bar chart with individual bars for each source and total
+ggplot(combined_data, aes(x = Year, y = Amount, fill = Source.of.Funding)) +
+  geom_bar(stat = "identity", position = position_dodge()) +
+  labs(title = "Total Revenue of Canadian National Broadcast Company by Source of Funding",
+       x = "Year",
+       y = "Amount ($ Millions)") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_fill_manual(values = c(
+    "Government revenue" = "#1f77b4",   # Blue
+    "Television revenue" = "#ff7f0e",   # Orange
+    "Digital revenue" = "#2ca02c",      # Green
+    "Subscriber fees" = "#d62728",      # Red
+    "Financing and other income" = "#9467bd", # Purple
+    "Total" = "#7f7f7f"  # Grey for total revenue
+  )) +
+  geom_text(aes(label = Amount), position = position_dodge(width = 0.9), vjust = -0.5, color = "black")
+```
+
+```{r echo=FALSE}
+
+# Create the pie chart for 2018-19
+pie_2018 <- ggplot(funding_long %>% filter(Year == "2018-19"), aes(x = "", y = Amount, fill = Source.of.Funding)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y") +
+  labs(title = "Funding Sources for 2018-19") +
+  theme_void() +
+  scale_fill_manual(values = c(
+    "Government revenue" = "#1f77b4",
+    "Television revenue" = "#ff7f0e",
+    "Digital revenue" = "#2ca02c",
+    "Subscriber fees" = "#d62728",
+    "Financing and other income" = "#9467bd"
+  )) +
+  geom_text(aes(label = paste0(round((Amount/sum(Amount))*100, 1), "%"),angle = ifelse((Amount/sum(Amount)) < 0.16, 90, 0)),  # Set angle based on condition
+            position = position_stack(vjust = 0.5),  # Center the lab
+            color = "white",  # Change text color
+            fontface = "bold",  # Make text bold
+            family = "Arial") +
+  theme(legend.position = "none")
+
+# Create the pie chart for 2017-18
+pie_2017 <- ggplot(funding_long %>% filter(Year == "2017-18"), aes(x = "", y = Amount, fill = Source.of.Funding)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y") +
+  labs(title = "Funding Sources for 2017-18") +
+  theme_void() +
+  scale_fill_manual(values = c(
+    "Government revenue" = "#1f77b4",
+    "Television revenue" = "#ff7f0e",
+    "Digital revenue" = "#2ca02c",
+    "Subscriber fees" = "#d62728",
+    "Financing and other income" = "#9467bd"
+  )) +
+  geom_text(aes(label = paste0(round((Amount/sum(Amount))*100, 1), "%"), angle = ifelse((Amount/sum(Amount)) < 0.16, 90, 0)),  # Set angle based on condition
+            position = position_stack(vjust = 0.5),  # Center the lab
+            color = "white",  # Change text color
+            fontface = "bold",  # Make text bold
+            family = "Arial") +
+  theme(legend.position = "bottom", 
+        legend.title = element_blank(),  # Remove legend title
+        legend.text = element_text(size = 10),  # Customize legend text size
+        legend.box = "horizontal",  # Arrange legend items horizontally
+        legend.box.just = "center") +  # Center the legend box
+  guides(fill = guide_legend(title = "Source of Funding", nrow = 1))
+
+
+grid.arrange(pie_2018, pie_2017,ncol = 2, heights = c(4, 1, 0.2))
+
+
+```
+
+```{r echo=FALSE}
+plot_ly(data = combined_data, 
+        x = ~Year, 
+        y = ~Amount, 
+        color = ~Source.of.Funding, 
+        colors = c("Government revenue" = "#1f77b4",
+                   "Television revenue" = "#ff7f0e",
+                   "Digital revenue" = "#2ca02c",
+                   "Subscriber fees" = "#d62728",
+                   "Financing and other income" = "#9467bd",
+                   "Total" = "#7f7f7f"),
+        type = 'bar', 
+        text = ~Amount, 
+        textposition = 'outside') %>%
+  layout(title = "Total Revenue of Canadian National Broadcast Company by Source of Funding",
+         xaxis = list(title = "Year"),
+         yaxis = list(title = "Amount ($ Millions)"),
+         barmode = 'group')  # Grouped bar chart
+```
+
+```{r echo=FALSE}
+print(colnames(funding_data))
+
+# Create the pie chart for 2018-19
+pie_2018 <- plot_ly(data = funding_long %>% filter(Year == "2018-19"), 
+                    labels = ~`Source.of.Funding`, 
+                    values = ~Amount, 
+                    type = 'pie', 
+                    textinfo = 'label+percent', 
+                    insidetextorientation = 'auto', 
+                    marker = list(colors = c(
+                      "#1f77b4",  # Government revenue
+                      "#ff7f0e",  # Television revenue
+                      "#2ca02c",   # Digital revenue
+                      "#d62728",   # Subscriber fees
+                      "#9467bd"    # Financing and other income
+                    )),
+                    showlegend = TRUE,
+                    title = "Funding Sources for 2018-19") %>%
+  layout(
+    legend = list(orientation = 'v',  # Vertical legend
+                  x = 1.1,            # Position on the right side
+                  y = 0.5,            # Centered vertically
+                  xanchor = 'left'),   # Left anchor for x
+    margin = list(r = 100)  # Increase right margin for legend spacing
+  )
+
+# Show the pie charts separately
+
+```
+
+```{r echo=FALSE}
+
+
+# Create the pie chart for 2018-19
+pie_2017 <- plot_ly(data = funding_long %>% filter(Year == "2017-18"), 
+                    labels = ~`Source.of.Funding`, 
+                    values = ~Amount, 
+                    type = 'pie', 
+                    textinfo = 'label+percent', 
+                    insidetextorientation = 'auto', 
+                    marker = list(colors = c(
+                      "#1f77b4",  # Government revenue
+                      "#ff7f0e",  # Television revenue
+                      "#2ca02c",   # Digital revenue
+                      "#d62728",   # Subscriber fees
+                      "#9467bd"    # Financing and other income
+                    )),title = "Funding Sources for 2017-18",
+                    showlegend = TRUE) %>%
+   layout(
+    legend = list(orientation = 'v',  # Vertical legend
+                  x = 1.1,            # Position on the right side
+                  y = 0.5,            # Centered vertically
+                  xanchor = 'left'),   # Left anchor for x
+    margin = list(r = 100)  # Increase right margin for legend spacing
+  ) # Increase bottom margin for better spacing
+  
+
+# Show the pie charts separately
+
+```
+
+```{r echo=FALSE}
+htmltools::browsable(
+  htmltools::tagList(
+    htmltools::tags$div(style = "display: block; width: 100%; margin-bottom: 50px;", pie_2018),
+    htmltools::tags$div(style = "display: block; width: 100%;", pie_2017)
+  )
+)
+```

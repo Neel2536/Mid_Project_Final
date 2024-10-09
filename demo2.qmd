@@ -1,0 +1,139 @@
+---
+title: "Demo Project test"
+---
+
+This is a Quarto website.
+
+To learn more about Quarto websites visit https://quarto.org/docs/websites.
+
+```{r echo=FALSE}
+library(readr)
+library(ggplot2)
+```
+```{r echo=FALSE}
+revenue_data <- read_csv("Untitled.csv",show_col_types = FALSE)
+```
+
+```{r echo=FALSE}
+library(knitr)
+library(tidyverse)
+```
+```{r echo=FALSE}
+include_graphics("Screenshot.png")
+```
+
+```{r}
+# Load necessary libraries
+library(ggplot2)
+
+# Assuming the data is loaded as covid_data
+# Convert necessary columns to factors for better plotting
+funding_data <- read.csv("Untitled.csv")
+
+print(colnames(funding_data))
+
+# Reshape the data from wide to long format
+funding_long <- funding_data %>%
+  pivot_longer(cols = c('X2018.19','X2017.18'), names_to = "Year", values_to = "Amount")
+
+total_revenue <- funding_long %>%
+  group_by(Year) %>%
+  summarize(Total = sum(Amount), .groups = 'drop')  # Avoids grouping issues
+
+total_revenue_df <- total_revenue %>%
+  mutate(Source_of_Funding = "Total")  
+
+# Create the bar chart
+ggplot(funding_long, aes(x = Year, y = Amount, fill = Source.of.Funding)) +
+ geom_bar(stat = "identity") +  # Stacked bar for each source of funding
+  labs(title = "Total Revenue of Canadian National Broadcast Company by Source of Funding",
+       x = "Year",
+       y = "Amount ($ Millions)") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_fill_manual(values = c(
+    "Government revenue" = "#1f77b4",   # Blue
+    "Television revenue" = "#ff7f0e",   # Orange
+    "Digital revenue" = "#2ca02c",      # Green
+    "Subscriber fees" = "#d62728",      # Red
+    "Financing and other income" = "#9467bd",  # Purple
+    "Total" = "#7f7f7f"  # Grey for total revenue
+  )) +
+  geom_text(aes(label = Amount), position = position_stack(vjust = 0.5), color = "white")  # Total revenue label
+print(head(funding_long))
+
+colnames(funding_data) <- c("Source.of.Funding", "2017-18", "2018-19")
+
+funding_long <- pivot_longer(funding_data, cols = c("2018-19","2017-18"),
+                              names_to = "Year", values_to = "Amount")
+
+# Step 3: Calculate total revenue for each year
+total_revenue <- funding_long %>%
+  group_by(Year) %>%
+  summarise(Source_of_Funding = "Total", Amount = sum(Amount))
+
+# Combine individual funding sources with total revenue
+combined_data <- bind_rows(funding_long, total_revenue)
+
+# Step 5: Convert Source.of.Funding to a factor with levels including "Total"
+combined_data$Source.of.Funding <- factor(combined_data$Source.of.Funding,
+                                           levels = c("Government revenue", "Television revenue", "Digital revenue", 
+                                                      "Subscriber fees", "Financing and other income", "Total"))
+
+# Step 6: Create the bar chart with individual bars for each source and total
+ggplot(combined_data, aes(x = Year, y = Amount, fill = Source.of.Funding)) +
+  geom_bar(stat = "identity", position = position_dodge()) +
+  labs(title = "Total Revenue of Canadian National Broadcast Company by Source of Funding",
+       x = "Year",
+       y = "Amount ($ Millions)") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_fill_manual(values = c(
+    "Government revenue" = "#1f77b4",   # Blue
+    "Television revenue" = "#ff7f0e",   # Orange
+    "Digital revenue" = "#2ca02c",      # Green
+    "Subscriber fees" = "#d62728",      # Red
+    "Financing and other income" = "#9467bd", # Purple
+    "Total" = "#7f7f7f"  # Grey for total revenue
+  )) +
+  geom_text(aes(label = Amount), position = position_dodge(width = 0.9), vjust = -0.5, color = "black")
+
+
+funding_long <- pivot_longer(funding_data, cols = c("2018-19","2017-18"),
+                              names_to = "Year", values_to = "Amount")
+
+# Step 4: Calculate total revenue for each year
+total_revenue <- funding_long %>%
+  group_by(Year) %>%
+  summarise(Source.of.Funding = "Total", Amount = sum(Amount), .groups = 'drop')
+
+# Combine individual funding sources with total revenue
+combined_data <- bind_rows(funding_long, total_revenue)
+
+# Step 5: Convert Source.of.Funding to a factor with explicit levels
+combined_data$Source.of.Funding <- factor(combined_data$Source.of.Funding,
+                                           levels = c("Government revenue", "Television revenue", "Digital revenue", 
+                                                      "Subscriber fees", "Financing and other income", "Total"))
+
+# Step 6: Create the bar chart with individual bars for each source and total
+ggplot(combined_data, aes(x = Year, y = Amount, fill = Source.of.Funding)) +
+  geom_bar(stat = "identity", position = position_dodge()) +
+  labs(title = "Total Revenue of Canadian National Broadcast Company by Source of Funding",
+       x = "Year",
+       y = "Amount ($ Millions)") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_fill_manual(values = c(
+    "Government revenue" = "#1f77b4",   # Blue
+    "Television revenue" = "#ff7f0e",   # Orange
+    "Digital revenue" = "#2ca02c",      # Green
+    "Subscriber fees" = "#d62728",      # Red
+    "Financing and other income" = "#9467bd", # Purple
+    "Total" = "#7f7f7f"  # Grey for total revenue
+  )) +
+  geom_text(aes(label = Amount), position = position_dodge(width = 0.9), vjust = -0.5, color = "black")
+```
+
+
+
+
