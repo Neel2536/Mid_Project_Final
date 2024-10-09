@@ -24,7 +24,8 @@ include_graphics("Final_revenue.png")
 
 
 ```{r}
-
+# Embed the YouTube video
+cat('<iframe width="560" height="315" src="https://www.youtube.com/embed/VIDEO_ID" frameborder="0" allowfullscreen></iframe>')
 ```
 
 
@@ -172,6 +173,11 @@ htmltools::browsable(
 - Bar Height Accuracy: The adjustment of bar heights ensured that the $490M revenue no longer appears larger than the $1.2B government funding, providing a correct visual comparison.
 - Component Merging: Merging the separate income components (such as advertising revenue) into the total income bar resolved the confusion caused by showing them as separate bars. This now clearly reflects the subdivisions within the total income.
 - Improved Visualization: The consistent color schemes and labels, along with the use of pie charts for proportional representation, enhance the clarity and comprehension of how each funding source contributes to the overall total.
+
+```{r}
+# Embed the YouTube video
+cat('<iframe width="560" height="315" src="https://www.youtube.com/watch?v=HOELmvotjvQ" frameborder="0" allowfullscreen></iframe>')
+```
 
 ## Refrences
 https://www.codeconquest.com/blog/12-bad-data-visualization-examples-explained/
